@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <odoo>
-    <record id="crm_lead_view_form_inherit_product" model="ir.ui.view">
+    <record id="crm_lead_view_form_inherit_product_lines" model="ir.ui.view">
         <field name="name">crm.lead.form.inherit.product.lines</field>
         <field name="model">crm.lead</field>
         <field name="inherit_id" ref="crm.crm_lead_view_form" />
@@ -10,12 +10,12 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
-            <xpath expr="//header" position="inside">
+            <xpath expr="//button[@name='action_set_won_rainbowman']" position="after">
                 <button name="action_make_quotation" 
                         string="New Quotation" 
                         type="object" 
                         class="oe_highlight" 
-                        invisible="type == 'lead' or not lead_line_ids"/>
+                        invisible="type == 'lead' or not active"/>
             </xpath>
             
             <page name="extra" position="before">

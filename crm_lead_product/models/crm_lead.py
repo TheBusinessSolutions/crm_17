@@ -4,7 +4,6 @@
 from odoo import api, fields, models, Command, _
 from odoo.exceptions import UserError
 
-
 class CrmLead(models.Model):
     _inherit = "crm.lead"
 
@@ -21,26 +20,14 @@ class CrmLead(models.Model):
             expected_revenue += lead_line.expected_revenue
         self.expected_revenue = expected_revenue
 
-    def _convert_opportunity_data(self, customer, team_id=False):
-        res = super()._convert_opportunity_data(customer, team_id)
-        expected_revenue = 0
-        for lead_line in self.lead_line_ids:
-            expected_revenue += lead_line.expected_revenue
-        res["expected_revenue"] = expected_revenue
-        return res
-
     def action_make_quotation(self):
-        """
-        Creates a Sale Order based on the Lead Lines and redirects to it.
-        """
         self.ensure_one()
         if not self.partner_id:
             raise UserError(_("Please set a customer before creating a quotation."))
-
         if not self.lead_line_ids:
-            raise UserError(_("There are no product lines to convert into a quotation."))
+            raise UserError(_("Please add at least one product line."))
 
-        # Prepare Order Lines using Command.create for Odoo 17
+        # Create Sale Order lines from Lead lines
         order_lines = []
         for line in self.lead_line_ids:
             order_lines.append(Command.create({
@@ -52,7 +39,7 @@ class CrmLead(models.Model):
             }))
 
         # Create the Sale Order
-        # opportunity_id link ensures it appears in the existing smart button
+        # opportunity_id link ensures it shows up in the standard Odoo Smart Button
         sale_order = self.env['sale.order'].create({
             'partner_id': self.partner_id.id,
             'opportunity_id': self.id,

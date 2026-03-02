@@ -8,7 +8,11 @@
     "summary": "Adds a lead line in the lead/opportunity model in odoo",
     "author": "ForgeFlow, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/crm",
-    "depends": ["crm", "product"],
+    'depends': [
+        'crm', 
+        'sale_management', 
+        'sale_crm'  # This is the important one for Smart Buttons
+    ],
     "data": [
         "security/ir.model.access.csv",
         "views/crm_lead_views.xml",
