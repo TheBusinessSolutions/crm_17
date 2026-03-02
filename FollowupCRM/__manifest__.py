@@ -3,7 +3,7 @@
 
 {
     'name': 'CRM Form Follow-up',
-    'version': '16.0.0.1',
+    'version': '17.0.0.1',
     'category': 'Sales',
     'license': 'OPL-1',
     'summary': 'This plugin helps to follow-up and managing customer',
