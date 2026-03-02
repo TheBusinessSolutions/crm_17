@@ -20,14 +20,23 @@ class CrmLead(models.Model):
             expected_revenue += lead_line.expected_revenue
         self.expected_revenue = expected_revenue
 
-    def action_make_quotation(self):
+    def _convert_opportunity_data(self, customer, team_id=False):
+        res = super()._convert_opportunity_data(customer, team_id)
+        expected_revenue = 0
+        for lead_line in self.lead_line_ids:
+            expected_revenue += lead_line.expected_revenue
+        res["expected_revenue"] = expected_revenue
+        return res
+
+    def action_create_quotation_from_lines(self):
+        """ Creates a Sale Order based on the Lead Lines. """
         self.ensure_one()
         if not self.partner_id:
             raise UserError(_("Please set a customer before creating a quotation."))
         if not self.lead_line_ids:
-            raise UserError(_("Please add at least one product line."))
+            raise UserError(_("Please add at least one product line before creating a quotation."))
 
-        # Create Sale Order lines from Lead lines
+        # Map lead lines to sale order lines using Odoo 17 Command syntax
         order_lines = []
         for line in self.lead_line_ids:
             order_lines.append(Command.create({
@@ -38,8 +47,7 @@ class CrmLead(models.Model):
                 'price_unit': line.price_unit,
             }))
 
-        # Create the Sale Order
-        # opportunity_id link ensures it shows up in the standard Odoo Smart Button
+        # Create the Sale Order and link it to the opportunity
         sale_order = self.env['sale.order'].create({
             'partner_id': self.partner_id.id,
             'opportunity_id': self.id,
@@ -50,6 +58,7 @@ class CrmLead(models.Model):
             'order_line': order_lines,
         })
 
+        # Return action to open the new Quotation
         return {
             'name': _('Quotation'),
             'type': 'ir.actions.act_window',
