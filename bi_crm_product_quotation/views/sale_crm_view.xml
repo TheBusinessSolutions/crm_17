@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="crm_case_form_view_opportunity" model="ir.ui.view">
+            <field name="name">crm.lead.oppor.inherited.crm</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="sale_crm.crm_case_form_view_oppor"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_view_sale_quotation']" position="attributes">
+                    <attribute name="invisible">type == 'lead' or not is_crm_quotation</attribute>
+                </xpath>
+            </field>
+        </record>
+    </odoo>

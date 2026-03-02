@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="crm_lead_view_form_view_inherit" model="ir.ui.view">
+        <field name="name">crm.lead.form</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="is_crm_quotation" invisible='1'/>
+            </xpath>
+            <xpath expr="//button[@name='iap_enrich']" position="after">
+                <button string="New Details Quotation" name="action_quotations_view" type="object" class="oe_highlight" invisible="type == 'lead' and probability == 0 or not active or is_crm_quotation"/>
+            </xpath>
+            <xpath expr="//button[@name='action_schedule_meeting']" position="before">
+                <button class="oe_stat_button" type="object"
+                        name="open_quotation_from_view_action" icon="fa-pencil-square-o"
+                        invisible="type == 'lead' and probability == 0 or not active or is_crm_quotation">
+                        <field name="crm_count" string="Quotations" widget="statinfo" invisible="type == 'lead' and probability == 0 or not active or is_crm_quotation"/>
+                </button>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string = "Products">
+                    <field name="lead_product_ids" nolabel="1">
+                        <tree editable="bottom" string="Products">
+                            <field name="product_id"/>
+                            <field name="name"/>
+                            <field name="product_uom_quantity"/>
+                            <field name="product_uom"/>
+                            <field name="price_unit"/>
+                            <field name="tax_id" widget="many2many_tags"/>
+                            <field name="product_uom_category_id" invisible="1"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="open_crm_opportunity_action">
+        <field name="name">Pipeline</field>
+        <field name="res_model">crm.lead</field>
+        <field name="view_mode">kanban,tree,graph,pivot,form,calendar,activity</field>
+        <field name="domain">[('type','=','opportunity'), ('is_crm_quotation','=',True)]</field>
+        <field name="context">{
+                    'default_type': 'opportunity',
+                    'search_default_assigned_to_me': 1,
+                    'default_is_crm_quotation': True
+        }</field>
+        <field name="search_view_id" ref="crm.view_crm_case_opportunities_filter"/>
+    </record>
+</odoo>

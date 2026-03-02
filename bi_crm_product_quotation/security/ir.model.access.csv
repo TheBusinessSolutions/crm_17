@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+bi_crm_product_quotation.access_lead_line,access_lead_line,bi_crm_product_quotation.model_lead_line,base.group_user,1,1,1,1
