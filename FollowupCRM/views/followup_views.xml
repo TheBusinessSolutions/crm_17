@@ -1,0 +1,45 @@
+<odoo>
+    <data>
+
+
+    <record id="view_followup_form" model="ir.ui.view">
+    <field name="name">followup.followup.form</field>
+    <field name="model">followup.followup</field>
+    <field name="arch" type="xml">
+        <form>
+            <group>
+                <field name="date" string="تاريخ المتابعة"/>
+                <field name="method" string="طريقة التواصل"/>
+                <field name="result" string="نتيجة التواصل"/>
+                <field name="shipping_invoice_id" invisible="1"/>
+            </group>
+        </form>
+    </field>
+</record>
+
+<record id="view_shipping_invoice_form_inherited" model="ir.ui.view">
+    <field name="name">crm.lead.form.inherited</field>
+    <field name="model">crm.lead</field>
+    <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+    <field name="arch" type="xml">
+        <notebook position="inside">
+            <page string="متابعات">
+                <form string="متابعات" class="oe_form_configuration">
+                        <field name="order_line" widget="one2many_list">
+                            <tree>
+                                <field name="date" string="تاريخ المتابعة"/>
+                                <field name="method" string="طريقة التواصل"/>
+                                <field name="result" string="نتيجة التواصل"/>
+                            </tree>
+                        </field>
+                </form>
+            </page>
+        </notebook>
+    </field>
+</record>
+
+
+    </data>
+</odoo>
+
+
