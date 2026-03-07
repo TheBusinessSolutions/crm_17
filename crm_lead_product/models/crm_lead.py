@@ -70,16 +70,34 @@ class CrmLead(models.Model):
             if not line.product_id or not line.name:
                 raise UserError(_('Each line must have a "Product" and a "Description".'))
 
-        # Map lead lines to sale order lines using Odoo 17 Command syntax
+        # Map lead lines to sale order lines
         order_lines = []
         for line in self.lead_line_ids:
-            order_lines.append(Command.create({
-                'product_id': line.product_id.id,
+            product = line.product_id.with_context(
+                lang=self.partner_id.lang,
+                partner=self.partner_id,
+                quantity=line.product_qty,
+                pricelist=self.partner_id.property_product_pricelist.id
+                if hasattr(self.partner_id, 'property_product_pricelist')
+                and self.partner_id.property_product_pricelist else False,
+                uom=line.uom_id.id or line.product_id.uom_id.id,
+            )
+
+            # Get taxes filtered by current company
+            taxes = product.taxes_id.filtered(
+                lambda t: t.company_id == self.env.company
+            )
+
+            line_vals = {
+                'product_id': product.id,
                 'name': line.name,
                 'product_uom_qty': line.product_qty,
-                'product_uom': line.uom_id.id,
+                'product_uom': line.uom_id.id or product.uom_id.id,
                 'price_unit': line.price_unit,
-            }))
+                'tax_id': [Command.set(taxes.ids)],
+            }
+
+            order_lines.append(Command.create(line_vals))
 
         # Create the Sale Order linked to the opportunity
         sale_order = self.env['sale.order'].create({
@@ -92,6 +110,15 @@ class CrmLead(models.Model):
             'state': 'draft',
             'order_line': order_lines,
         })
+
+        # Trigger product onchange on each line to populate
+        # all missing fields like income account, etc.
+        for sol in sale_order.order_line:
+            sol._compute_tax_id()
+            if hasattr(sol, 'product_id_change'):
+                sol.product_id_change()
+            if hasattr(sol, '_onchange_product_id'):
+                sol._onchange_product_id()
 
         # Open the newly created quotation in a form view
         return {
