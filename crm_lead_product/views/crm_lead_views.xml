@@ -5,24 +5,52 @@
         <field name="model">crm.lead</field>
         <field name="inherit_id" ref="crm.crm_lead_view_form" />
         <field name="arch" type="xml">
-            
+
+            <!-- Hide the default New Quotation button -->
             <xpath expr="//button[@name='action_sale_quotation_new']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
 
+            <!-- Add smart button for quotation count -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_quotations"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-usd"
+                        invisible="quotation_count == 0">
+                    <field name="quotation_count"
+                           widget="statinfo"
+                           string="Quotations"/>
+                </button>
+            </xpath>
+
+            <!-- Add "New Quotation from Lines" button in header -->
             <xpath expr="//button[@name='action_set_won_rainbowman']" position="after">
-                <button name="action_create_quotation_from_lines" 
-                        string="New Quotation from Lines" 
-                        type="object" 
-                        class="oe_highlight" 
+                <button name="action_create_quotation_from_lines"
+                        string="New Quotation from Lines"
+                        type="object"
+                        class="oe_highlight"
                         invisible="type == 'lead' or not lead_line_ids"/>
             </xpath>
-            
+
+            <!-- Add Products tab before Extra Information tab -->
             <page name="extra" position="before">
                 <page name="products" string="Products">
-                    <field name="lead_line_ids" />
+                    <field name="lead_line_ids">
+                        <tree editable="bottom">
+                            <field name="product_id"/>
+                            <field name="name"/>
+                            <field name="category_id"/>
+                            <field name="product_qty"/>
+                            <field name="uom_id"/>
+                            <field name="price_unit"/>
+                            <field name="expected_revenue"/>
+                            <field name="prorated_revenue"/>
+                        </tree>
+                    </field>
                 </page>
             </page>
+
         </field>
     </record>
 </odoo>
