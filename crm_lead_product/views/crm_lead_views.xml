@@ -6,12 +6,7 @@
         <field name="inherit_id" ref="crm.crm_lead_view_form" />
         <field name="arch" type="xml">
 
-            <!-- Hide the default New Quotation button -->
-            <xpath expr="//button[@name='action_sale_quotation_new']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-
-            <!-- Add smart button for quotation count -->
+            <!-- Smart button for quotation count -->
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button name="action_view_quotations"
                         type="object"
@@ -24,7 +19,7 @@
                 </button>
             </xpath>
 
-            <!-- Add "New Quotation from Lines" button in header -->
+            <!-- Add "New Quotation from Lines" button after Won button -->
             <xpath expr="//button[@name='action_set_won_rainbowman']" position="after">
                 <button name="action_create_quotation_from_lines"
                         string="New Quotation from Lines"
